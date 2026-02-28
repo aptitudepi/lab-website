@@ -6091,6 +6091,11 @@ void main() {
 			color: #d1d5db;
 		}
 
+		/* Fix opacity-50 on text elements — 0.5 opacity fails contrast even with bright text */
+		.opacity-50 {
+			opacity: 0.85 !important;
+		}
+
 		/* Reduced Motion (WCAG 2.3.3) */
 		@media (prefers-reduced-motion: reduce) {
 
