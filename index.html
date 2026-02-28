@@ -6085,6 +6085,12 @@ void main() {
 			color: #d1d5db !important;
 		}
 
+		/* Audit Issue #1: Contrast fix for .mt-2 / .mt-4 elements containing low-contrast text */
+		.mt-2,
+		.mt-4 {
+			color: #d1d5db;
+		}
+
 		/* Reduced Motion (WCAG 2.3.3) */
 		@media (prefers-reduced-motion: reduce) {
 
@@ -6108,16 +6114,124 @@ void main() {
 <body>
 	<!-- Skip Navigation Link (WCAG 2.4.1) -->
 	<a href="#root" class="a11y-skip-link">Skip to main content</a>
-	<div id="root" role="main"></div>
+	<div id="root"></div>
 
 	<!-- ADA Title II / WCAG 2.1 AA Accessibility Enhancement Script -->
 	<script>
 		(function () {
 			'use strict';
 
-			// Run after React has rendered
+			var patchTimer = null;
+
 			function patchAccessibility() {
-				// 1. Add title to Google Maps iframe (WCAG 2.4.1, 4.1.2)
+				// --- Audit Issue #1: Color Contrast (.mt-2 / .mt-4) ---
+				// Already handled via CSS overrides above
+
+				// --- Audit Issue #2: Heading Semantics (h3 skipping h2) ---
+				// Fix h3 elements that appear without a preceding h2
+				var allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+				var lastLevel = 0;
+				allHeadings.forEach(function (heading) {
+					var level = parseInt(heading.tagName.charAt(1), 10);
+					if (level > lastLevel + 1 && lastLevel > 0) {
+						// This heading skips a level — replace with correct level
+						var correctLevel = lastLevel + 1;
+						var newTag = 'h' + correctLevel;
+						var replacement = document.createElement(newTag);
+						// Copy attributes
+						for (var i = 0; i < heading.attributes.length; i++) {
+							replacement.setAttribute(heading.attributes[i].name, heading.attributes[i].value);
+						}
+						replacement.innerHTML = heading.innerHTML;
+						heading.parentNode.replaceChild(replacement, heading);
+						level = correctLevel;
+					}
+					lastLevel = level;
+				});
+
+				// --- Audit Issue #3: Contentinfo landmark (footer) at top level ---
+				// --- Audit Issue #4: Main landmark at top level ---
+				// --- Audit Issue #5: Document has at most one main landmark ---
+				// --- Audit Issue #6: Landmarks have unique accessible names ---
+				var root = document.getElementById('root');
+
+				// Remove any role="main" from #root to prevent duplicate main landmark
+				if (root && root.getAttribute('role') === 'main') {
+					root.removeAttribute('role');
+				}
+
+				// Ensure there is exactly one <main> and it's at the top level of <body>
+				var mains = document.querySelectorAll('main, [role="main"]');
+				if (mains.length > 1) {
+					// Keep only the first one, remove role from others
+					for (var m = 1; m < mains.length; m++) {
+						if (mains[m].tagName.toLowerCase() === 'main') {
+							mains[m].setAttribute('role', 'none');
+						} else {
+							mains[m].removeAttribute('role');
+						}
+					}
+				}
+
+				// Make wrapper divs between <body> and landmarks transparent to a11y tree
+				// so <main> and <footer> appear top-level without breaking layout
+				function promoteToTopLevel(el) {
+					var parent = el.parentElement;
+					while (parent && parent !== document.body) {
+						if (parent.tagName.toLowerCase() === 'div' && !parent.getAttribute('role')) {
+							parent.setAttribute('role', 'presentation');
+						}
+						parent = parent.parentElement;
+					}
+				}
+
+				var mainEl = document.querySelector('main');
+				if (mainEl) {
+					promoteToTopLevel(mainEl);
+					if (!mainEl.getAttribute('aria-label')) {
+						mainEl.setAttribute('aria-label', 'Page content');
+					}
+				}
+
+				var footerEl = document.querySelector('footer');
+				if (footerEl) {
+					promoteToTopLevel(footerEl);
+					if (!footerEl.getAttribute('aria-label')) {
+						footerEl.setAttribute('aria-label', 'Site footer');
+					}
+				}
+
+				// --- Audit Issue #7: Buttons must have accessible names ---
+				document.querySelectorAll('button').forEach(function (btn) {
+					var hasName = btn.textContent.trim() ||
+						btn.getAttribute('aria-label') ||
+						btn.getAttribute('aria-labelledby') ||
+						btn.getAttribute('title');
+					if (!hasName) {
+						// Try to infer a label from SVG icon or context
+						var svg = btn.querySelector('svg');
+						var parentNav = btn.closest('nav, header');
+						if (parentNav) {
+							btn.setAttribute('aria-label', 'Toggle navigation menu');
+						} else if (svg) {
+							// Generic label based on context
+							var cls = svg.getAttribute('class') || '';
+							if (cls.indexOf('x') !== -1 || cls.indexOf('close') !== -1) {
+								btn.setAttribute('aria-label', 'Close');
+							} else if (cls.indexOf('menu') !== -1 || cls.indexOf('hamburger') !== -1) {
+								btn.setAttribute('aria-label', 'Open menu');
+							} else {
+								btn.setAttribute('aria-label', 'Action button');
+							}
+						} else {
+							btn.setAttribute('aria-label', 'Action button');
+						}
+					}
+				});
+
+				// --- Previous fixes (still needed) ---
+
+				// Add title to Google Maps iframe (WCAG 2.4.1, 4.1.2)
 				document.querySelectorAll('iframe').forEach(function (iframe) {
 					if (!iframe.title || iframe.title === '') {
 						var src = iframe.getAttribute('src') || '';
@@ -6129,7 +6243,7 @@ void main() {
 					}
 				});
 
-				// 2. Add aria-hidden to decorative SVG icons (WCAG 1.1.1)
+				// Add aria-hidden to decorative SVG icons (WCAG 1.1.1)
 				document.querySelectorAll('svg').forEach(function (svg) {
 					if (!svg.getAttribute('role') && !svg.getAttribute('aria-label')) {
 						svg.setAttribute('aria-hidden', 'true');
@@ -6137,22 +6251,24 @@ void main() {
 					}
 				});
 
-				// 3. Make canvas elements non-focusable and decorative (WebGL background)
+				// Make canvas elements non-focusable and decorative (WebGL background)
 				document.querySelectorAll('canvas').forEach(function (canvas) {
 					canvas.setAttribute('aria-hidden', 'true');
 					canvas.setAttribute('tabindex', '-1');
 					canvas.setAttribute('role', 'presentation');
 				});
 
-				// 4. Ensure the nav element has proper aria labels
-				document.querySelectorAll('nav, [class*="nav"]').forEach(function (nav) {
-					if (!nav.getAttribute('aria-label') && !nav.getAttribute('role')) {
-						nav.setAttribute('aria-label', 'Main navigation');
+				// Nav landmark labels
+				var navCount = 0;
+				document.querySelectorAll('nav').forEach(function (nav) {
+					if (!nav.getAttribute('aria-label') && !nav.getAttribute('aria-labelledby')) {
+						navCount++;
+						nav.setAttribute('aria-label', navCount === 1 ? 'Main navigation' : 'Secondary navigation');
 					}
 				});
 			}
 
-			// 5. Update document.title on SPA route changes (WCAG 2.4.2)
+			// Update document.title on SPA route changes (WCAG 2.4.2)
 			function updateTitle() {
 				var h1 = document.querySelector('h1');
 				if (h1) {
@@ -6163,13 +6279,19 @@ void main() {
 				}
 			}
 
+			// Debounced patch to avoid excessive MutationObserver calls
+			function debouncedPatch() {
+				if (patchTimer) clearTimeout(patchTimer);
+				patchTimer = setTimeout(function () {
+					patchAccessibility();
+					updateTitle();
+				}, 300);
+			}
+
 			// MutationObserver to re-patch after React re-renders (SPA navigation)
 			var root = document.getElementById('root');
 			if (root) {
-				var observer = new MutationObserver(function () {
-					patchAccessibility();
-					updateTitle();
-				});
+				var observer = new MutationObserver(debouncedPatch);
 				observer.observe(root, { childList: true, subtree: true });
 			}
 

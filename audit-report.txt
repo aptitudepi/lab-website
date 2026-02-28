@@ -1,0 +1,204 @@
+Domain: dvxb.io
+Timestamp: 5:29am, Feb 28, 2026
+
+Accessibility Summary for dvxb.io
+Accessibility Score
+
+Lawsuit Risk
+
+WCAG 2.2 Criteria
+
+HIGH LAWSUIT RISK
+
+59%
+
+WEBSITE SCORE
+
+8 issues are exposing this website
+to an accessibility lawsuit,
+immediate actions required
+
+Websites with score of 50% or
+below are at risk of lawsuits
+
+Scanned pages
+
+Critical issues
+
+8
+
+Passed Audits
+
+27
+
+Required Manual
+Audits
+
+3
+
+Not Applicable
+
+55
+
+1 page
+
+out of entire domain
+
+Testing Standards
+We test websites based on WCAG 2.2, the international standards by
+508
+
+, EEA and EN 301 549
+
+. These standards are accepted by ADA and Section
+
+, and other worldwide accessibility legislations.
+
+Issues
+#
+
+Issue title
+
+Disabilities affected
+
+1
+
+Ensures the contrast between foreground
+and background colors meets WCAG 2 AA
+minimum contrast ratio thresholds
+
+Low Vision
+
+Required to fix by
+Colorblindness
+
+WCAG 2.0 - 2.2 (AA)
+Section 508
+
+EN 301 549
+
+FAILING ELEMENTS
+
+.mt-2
+.mt-4
+2
+
+Ensures the order of headings is
+semantically correct
+
+Blind
+
+Deafblind
+
+Best Practices
+
+Low Mobility
+
+FAILING ELEMENTS
+
+div:nth-child(1) > h3
+
+For further details and assistance please reach out to us at accessibilitychecker.org
+
+Domain: dvxb.io
+Timestamp: 5:29am, Feb 28, 2026
+
+#
+
+Issue title
+
+Disabilities affected
+
+3
+
+Ensures the contentinfo landmark is at top
+level
+
+Sighted Keyboard Users
+
+Required to fix by
+Blind
+
+Best Practices
+
+Deafblind
+
+FAILING ELEMENTS
+
+footer
+4
+
+Ensures the main landmark is at top level
+
+Deafblind
+
+Best Practices
+
+Deafblind
+
+Best Practices
+
+Blind
+
+Deafblind
+
+Best Practices
+
+Blind
+
+Deafblind
+
+WCAG 2.0 - 2.2 (A)
+
+Blind
+
+Low Mobility
+
+FAILING ELEMENTS
+
+main
+5
+
+Ensures the document has at most one
+main landmark
+
+Blind
+
+Low Mobility
+
+FAILING ELEMENTS
+
+#root
+6
+
+Landmarks should have a unique role or
+role/label/title (i.e. accessible name)
+combination
+FAILING ELEMENTS
+
+#root
+7
+
+Ensure Buttons Have Accessible Names
+
+Section 508
+
+EN 301 549
+
+FAILING ELEMENTS
+
+button
+
+Recommendations for dvxb.io
+
+For further details and assistance please reach out to us at accessibilitychecker.org
+
+Domain: dvxb.io
+Timestamp: 5:29am, Feb 28, 2026
+
+1. Scan the entire domain
+Scan the entire domain, and remediate all failing issues.
+
+For further details and assistance please reach out to us at accessibilitychecker.org
+
+
